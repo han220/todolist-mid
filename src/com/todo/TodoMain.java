@@ -95,6 +95,10 @@ public class TodoMain {
 			case "exit":
 				quit = true;
 				break;
+				
+			case "import":
+				TodoUtil.importCSV(String.join(" ", List.of(input).subList(1, input.length)));
+				break;
 
 			default:
 				System.out.println("알 수 없는 명령어입니다.");

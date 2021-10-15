@@ -19,6 +19,7 @@ public class Menu {
 		System.out.println("ls_cat - List Categories");
 		System.out.println("comp [id] - Complete id");
 		System.out.println("ls_comp - List completed items");
+		System.out.println("import [filename] - Import CSV");
 		System.out.println("exit - exit");
 		
 	}

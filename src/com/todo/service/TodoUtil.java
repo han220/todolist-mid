@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.StringTokenizer;
 
+import com.opencsv.CSVReader;
+import com.opencsv.CSVReaderBuilder;
 import com.todo.PriorityItem;
 import com.todo.dao.TodoItem;
 import com.todo.dao.TodoList;
@@ -37,11 +39,11 @@ public class TodoUtil {
 
 		System.out.println("마감일자 입력: ");
 		String duedate = sc.next().trim();
-		
+
 		System.out.println("우선순위 입력");
 		PriorityItem p = null;
-		
-		while(p == null) {
+
+		while (p == null) {
 			System.out.println(PriorityItem.getAllOptions());
 			p = PriorityItem.fromNo(sc.nextInt());
 		}
@@ -85,11 +87,11 @@ public class TodoUtil {
 
 		System.out.println("마감일자 입력: ");
 		String duedate = sc.next().trim();
-		
+
 		System.out.println("우선순위 입력");
 		PriorityItem p = null;
-		
-		while(p == null) {
+
+		while (p == null) {
 			System.out.println(PriorityItem.getAllOptions());
 			p = PriorityItem.fromNo(sc.nextInt());
 		}
@@ -116,6 +118,25 @@ public class TodoUtil {
 //		l.findItem(niddle);
 //	}
 
+	public static void importCSV(String filename) {
+		try {
+			FileReader filereader = new FileReader(filename);
+
+			CSVReader csvReader = new CSVReaderBuilder(filereader).withSkipLines(1).build();
+			List<String[]> allData = csvReader.readAll();
+
+			for (String[] row : allData) {
+				TodoList.addItem(new TodoItem(row[1], row[2], row[3], row[6], row[4],
+						PriorityItem.fromNo(Integer.valueOf(row[8])), Integer.valueOf(row[5]), row[7]));
+			}
+			System.out.println("Imported " + allData.size() + " items.");
+
+		} catch (Exception e) {
+			System.out.println("Error while importing CSV");
+		}
+
+	}
+
 	@Deprecated
 	public static void saveList(String filename) {
 		try {
@@ -136,7 +157,8 @@ public class TodoUtil {
 			while ((oneline = br.readLine()) != null) {
 				StringTokenizer st = new StringTokenizer(oneline, "##");
 				TodoList.addItem(
-						new TodoItem(st.nextToken(), st.nextToken(), st.nextToken(), st.nextToken(), st.nextToken(), PriorityItem.fromNo(Integer.valueOf(st.nextToken())), Integer.valueOf(st.nextToken())));
+						new TodoItem(st.nextToken(), st.nextToken(), st.nextToken(), st.nextToken(), st.nextToken(),
+								PriorityItem.fromNo(Integer.valueOf(st.nextToken())), Integer.valueOf(st.nextToken())));
 			}
 			br.close();
 		} catch (FileNotFoundException e) {

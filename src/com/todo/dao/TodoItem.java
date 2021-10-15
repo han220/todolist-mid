@@ -45,6 +45,17 @@ public class TodoItem {
 		this.owner = TodoMain.getUserName();
 	}
 	
+	public TodoItem(String category, String title, String desc, String duedate, String current_date, PriorityItem p, int is_completed, String owner) {
+		this.title = title;
+		this.desc = desc;
+		this.current_date = current_date;
+		this.category = category;
+		this.duedate = duedate;
+		this.priority = p;
+		this.is_completed = is_completed;
+		this.owner = owner;
+	}
+	
 	/**
 	 * Full data
 	 */
@@ -126,6 +137,10 @@ public class TodoItem {
 
 	public String toSaveString() {
 		return category + "##" + title + "##" + desc + "##" + duedate + "##" + current_date + "##" + priority.getNo() + "##" + is_completed + "\n";
+	}
+	
+	public int getIsCompleted() {
+		return is_completed;
 	}
 	
 	/**

@@ -29,7 +29,7 @@ public class TodoList {
 		Connection conn = db.getConnection();
 
 		String sql = "insert into " + MyDatabase.tableName
-				+ " (title, memo, category, current_date, due_date, priority, owner) values (?, ?, ?, ?, ?, ?, ?);";
+				+ " (title, memo, category, current_date, due_date, priority, owner, is_completed) values (?, ?, ?, ?, ?, ?, ?, ?);";
 		PreparedStatement pstmt = null;
 		try {
 			pstmt = conn.prepareStatement(sql);
@@ -40,6 +40,7 @@ public class TodoList {
 			pstmt.setString(5, t.getDueDate());
 			pstmt.setInt(6, (t.getPrioirty() != null ? t.getPrioirty() : PriorityItem.NORMAL ).getNo());
 			pstmt.setString(7, t.getOwner());
+			pstmt.setInt(8, t.getIsCompleted());
 			int count = pstmt.executeUpdate();
 			System.out.println("Saved " + count + " item(s)");
 		} catch (SQLException e) {
