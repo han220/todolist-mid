@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.StringTokenizer;
 
+import com.todo.PriorityItem;
 import com.todo.dao.TodoItem;
 import com.todo.dao.TodoList;
 
@@ -36,8 +37,16 @@ public class TodoUtil {
 
 		System.out.println("마감일자 입력: ");
 		String duedate = sc.next().trim();
+		
+		System.out.println("우선순위 입력");
+		PriorityItem p = null;
+		
+		while(p == null) {
+			System.out.println(PriorityItem.getAllOptions());
+			p = PriorityItem.fromNo(sc.nextInt());
+		}
 
-		TodoItem t = new TodoItem(category, title, desc, duedate);
+		TodoItem t = new TodoItem(category, title, desc, duedate, p);
 		TodoList.addItem(t);
 	}
 
@@ -76,9 +85,17 @@ public class TodoUtil {
 
 		System.out.println("마감일자 입력: ");
 		String duedate = sc.next().trim();
+		
+		System.out.println("우선순위 입력");
+		PriorityItem p = null;
+		
+		while(p == null) {
+			System.out.println(PriorityItem.getAllOptions());
+			p = PriorityItem.fromNo(sc.nextInt());
+		}
 
 		// 업데이트
-		TodoList.editItem(no_i, new TodoItem(category, new_title, new_description, duedate));
+		TodoList.editItem(no_i, new TodoItem(category, new_title, new_description, duedate, p));
 		System.out.println("업데이트 완료.");
 
 	}
@@ -119,7 +136,7 @@ public class TodoUtil {
 			while ((oneline = br.readLine()) != null) {
 				StringTokenizer st = new StringTokenizer(oneline, "##");
 				TodoList.addItem(
-						new TodoItem(st.nextToken(), st.nextToken(), st.nextToken(), st.nextToken(), st.nextToken()));
+						new TodoItem(st.nextToken(), st.nextToken(), st.nextToken(), st.nextToken(), st.nextToken(), PriorityItem.fromNo(Integer.valueOf(st.nextToken())), Integer.valueOf(st.nextToken())));
 			}
 			br.close();
 		} catch (FileNotFoundException e) {

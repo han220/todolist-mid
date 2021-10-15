@@ -4,14 +4,25 @@ package com.todo;
 
 
 import java.util.List;
+import java.util.Scanner;
 
 import com.todo.dao.TodoList;
 import com.todo.menu.Menu;
 import com.todo.service.TodoUtil;
 
 public class TodoMain {
+	private static String username = "";
+	
+	public static String getUserName() {
+		return username;
+	}
 	
 	public static void start() {
+		// Get userinfo
+		Scanner sc = new Scanner(System.in);
+		System.out.print("Enter your username: ");
+		username = sc.nextLine();
+		
 		// Load Data
 //		TodoUtil.loadList("todolist.txt");
 		

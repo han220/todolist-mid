@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.todo.PriorityItem;
 import com.todo.service.MyDatabase;
 
 public class TodoList {
@@ -28,7 +29,7 @@ public class TodoList {
 		Connection conn = db.getConnection();
 
 		String sql = "insert into " + MyDatabase.tableName
-				+ " (title, memo, category, current_date, due_date) values (?, ?, ?, ?, ?);";
+				+ " (title, memo, category, current_date, due_date, priority, owner) values (?, ?, ?, ?, ?, ?, ?);";
 		PreparedStatement pstmt = null;
 		try {
 			pstmt = conn.prepareStatement(sql);
@@ -37,6 +38,8 @@ public class TodoList {
 			pstmt.setString(3, t.getCategory());
 			pstmt.setString(4, t.getCurrent_date_str());
 			pstmt.setString(5, t.getDueDate());
+			pstmt.setInt(6, (t.getPrioirty() != null ? t.getPrioirty() : PriorityItem.NORMAL ).getNo());
+			pstmt.setString(7, t.getOwner());
 			int count = pstmt.executeUpdate();
 			System.out.println("Saved " + count + " item(s)");
 		} catch (SQLException e) {
@@ -96,7 +99,7 @@ public class TodoList {
 				count++;
 				System.out.println(new TodoItem(rs.getInt("id"), rs.getString("category"), rs.getString("title"),
 						rs.getString("memo"), rs.getString("due_date"), rs.getString("current_date"),
-						rs.getInt("is_completed")).toString());
+						rs.getInt("is_completed"), PriorityItem.fromNo(rs.getInt("priority")), rs.getString("owner")).toString());
 			}
 			System.out.println("Found " + count + " item(s)");
 
@@ -129,7 +132,7 @@ public class TodoList {
 				count++;
 				System.out.println(new TodoItem(rs.getInt("id"), rs.getString("category"), rs.getString("title"),
 						rs.getString("memo"), rs.getString("due_date"), rs.getString("current_date"),
-						rs.getInt("is_completed")).toString());
+						rs.getInt("is_completed"), PriorityItem.fromNo(rs.getInt("priority")), rs.getString("owner")).toString());
 			}
 			System.out.println("Found " + count + " item(s)");
 
@@ -149,7 +152,7 @@ public class TodoList {
 		Connection conn = db.getConnection();
 
 		String sql = "UPDATE " + MyDatabase.tableName
-				+ " SET title=?, memo=?, category=?, current_date=?, due_date=? WHERE id=?";
+				+ " SET title=?, memo=?, category=?, current_date=?, due_date=?, priority=?, owner=? WHERE id=?";
 		PreparedStatement pstmt = null;
 		try {
 			pstmt = conn.prepareStatement(sql);
@@ -158,7 +161,9 @@ public class TodoList {
 			pstmt.setString(3, updated.getCategory());
 			pstmt.setString(4, updated.getCurrent_date_str());
 			pstmt.setString(5, updated.getDueDate());
-			pstmt.setInt(6, id);
+			pstmt.setInt(6, (updated.getPrioirty() != null ? updated.getPrioirty() : PriorityItem.NORMAL ).getNo());
+			pstmt.setString(7, updated.getOwner());			
+			pstmt.setInt(8, id);
 			int count = pstmt.executeUpdate();
 			System.out.println("Updated " + count + " item(s)");
 		} catch (SQLException e) {
@@ -212,7 +217,7 @@ public class TodoList {
 				counter++;
 				System.out.println(new TodoItem(rs.getInt("id"), rs.getString("category"), rs.getString("title"),
 						rs.getString("memo"), rs.getString("due_date"), rs.getString("current_date"),
-						rs.getInt("is_completed")).toString());
+						rs.getInt("is_completed"), PriorityItem.fromNo(rs.getInt("priority")), rs.getString("owner")).toString());
 			}
 			
 			System.out.println("Completed " + counter + " task(s)");
@@ -248,7 +253,7 @@ public class TodoList {
 			while (rs.next()) {
 				todos.add(new TodoItem(rs.getInt("id"), rs.getString("category"), rs.getString("title"),
 						rs.getString("memo"), rs.getString("due_date"), rs.getString("current_date"),
-						rs.getInt("is_completed")));
+						rs.getInt("is_completed"), PriorityItem.fromNo(rs.getInt("priority")), rs.getString("owner")));
 			}
 
 		} catch (SQLException e) {
@@ -277,7 +282,7 @@ public class TodoList {
 			while (rs.next()) {
 				System.out.println(new TodoItem(rs.getInt("id"), rs.getString("category"), rs.getString("title"),
 						rs.getString("memo"), rs.getString("due_date"), rs.getString("current_date"),
-						rs.getInt("is_completed")).toString());
+						rs.getInt("is_completed"), PriorityItem.fromNo(rs.getInt("priority")), rs.getString("owner")).toString());
 			}
 
 		} catch (SQLException e) {
@@ -321,7 +326,7 @@ public class TodoList {
 			while (rs.next()) {
 				System.out.println(new TodoItem(rs.getInt("id"), rs.getString("category"), rs.getString("title"),
 						rs.getString("memo"), rs.getString("due_date"), rs.getString("current_date"),
-						rs.getInt("is_completed")).toString());
+						rs.getInt("is_completed"), PriorityItem.fromNo(rs.getInt("priority")), rs.getString("owner")).toString());
 			}
 
 		} catch (SQLException e) {

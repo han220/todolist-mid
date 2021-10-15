@@ -26,7 +26,7 @@ public class MyDatabase implements Closeable{
 			// 만약에 테이블이 없다면 생성
 			Statement stmt = con.createStatement();
 			String sql = "CREATE TABLE IF NOT EXISTS " + tableName
-					+ " (id INTEGER NOT NULL, title TEXT NOT NULL, memo TEXT, category TEXT NOT NULL, current_date TEXT NOT NULL, due_date TEXT, is_completed integer DEFAULT 0,PRIMARY KEY(id AUTOINCREMENT));";
+					+ " (id INTEGER NOT NULL, title TEXT NOT NULL, memo TEXT, category TEXT NOT NULL, current_date TEXT NOT NULL, due_date TEXT, is_completed integer DEFAULT 0, owner VARCHAR(20) NOT NULL, priority integer DEFAULT 2, PRIMARY KEY(id AUTOINCREMENT));";
 			stmt.execute(sql);
 			stmt.close();
 
