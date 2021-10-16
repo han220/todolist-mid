@@ -57,10 +57,11 @@ public class TodoUtil {
 		Scanner sc = new Scanner(System.in);
 
 		System.out.println("\n" + "========== 삭제 \n" + "삭제할 번호 입력: ");
+		System.out.println("========== , 을 활용하여 다중 입력 가능. (ex 2,3,4)");
 
 		String no = sc.next().trim();
-		int no_i = Integer.parseInt(no);
-		TodoList.deleteindex(no_i - 1);
+		for(String n : no.split(","))
+			TodoList.deleteindex(Integer.parseInt(n) - 1);
 	}
 
 	public static void updateItem() {

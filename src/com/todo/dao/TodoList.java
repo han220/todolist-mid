@@ -38,7 +38,7 @@ public class TodoList {
 			pstmt.setString(3, t.getCategory());
 			pstmt.setString(4, t.getCurrent_date_str());
 			pstmt.setString(5, t.getDueDate());
-			pstmt.setInt(6, (t.getPrioirty() != null ? t.getPrioirty() : PriorityItem.NORMAL ).getNo());
+			pstmt.setInt(6, (t.getPrioirty() != null ? t.getPrioirty() : PriorityItem.NORMAL).getNo());
 			pstmt.setString(7, t.getOwner());
 			pstmt.setInt(8, t.getIsCompleted());
 			int count = pstmt.executeUpdate();
@@ -100,7 +100,8 @@ public class TodoList {
 				count++;
 				System.out.println(new TodoItem(rs.getInt("id"), rs.getString("category"), rs.getString("title"),
 						rs.getString("memo"), rs.getString("due_date"), rs.getString("current_date"),
-						rs.getInt("is_completed"), PriorityItem.fromNo(rs.getInt("priority")), rs.getString("owner")).toString());
+						rs.getInt("is_completed"), PriorityItem.fromNo(rs.getInt("priority")), rs.getString("owner"))
+								.toString());
 			}
 			System.out.println("Found " + count + " item(s)");
 
@@ -133,7 +134,8 @@ public class TodoList {
 				count++;
 				System.out.println(new TodoItem(rs.getInt("id"), rs.getString("category"), rs.getString("title"),
 						rs.getString("memo"), rs.getString("due_date"), rs.getString("current_date"),
-						rs.getInt("is_completed"), PriorityItem.fromNo(rs.getInt("priority")), rs.getString("owner")).toString());
+						rs.getInt("is_completed"), PriorityItem.fromNo(rs.getInt("priority")), rs.getString("owner"))
+								.toString());
 			}
 			System.out.println("Found " + count + " item(s)");
 
@@ -162,8 +164,8 @@ public class TodoList {
 			pstmt.setString(3, updated.getCategory());
 			pstmt.setString(4, updated.getCurrent_date_str());
 			pstmt.setString(5, updated.getDueDate());
-			pstmt.setInt(6, (updated.getPrioirty() != null ? updated.getPrioirty() : PriorityItem.NORMAL ).getNo());
-			pstmt.setString(7, updated.getOwner());			
+			pstmt.setInt(6, (updated.getPrioirty() != null ? updated.getPrioirty() : PriorityItem.NORMAL).getNo());
+			pstmt.setString(7, updated.getOwner());
 			pstmt.setInt(8, id);
 			int count = pstmt.executeUpdate();
 			System.out.println("Updated " + count + " item(s)");
@@ -178,19 +180,23 @@ public class TodoList {
 		db.close();
 	}
 
-	public static void completeItem(int id) {
+	public static void completeItems(Integer[] ids) {
 		MyDatabase db = new MyDatabase();
 		Connection conn = db.getConnection();
 
-		String sql = "UPDATE " + MyDatabase.tableName
-				+ " SET is_completed=? WHERE id=?";
+		String sql = "UPDATE " + MyDatabase.tableName + " SET is_completed=? WHERE id=?";
 		PreparedStatement pstmt = null;
 		try {
 			pstmt = conn.prepareStatement(sql);
-			pstmt.setInt(1, 1);
-			pstmt.setInt(2, id);
-			int count = pstmt.executeUpdate();
-			System.out.println("Completed " + count + " item(s)");
+
+			for (int id : ids) {
+				pstmt.setInt(1, 1);
+				pstmt.setInt(2, id);
+				int count = pstmt.executeUpdate();
+				System.out.println("Completed " + count + " item(s)");
+
+			}
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
@@ -201,26 +207,27 @@ public class TodoList {
 		}
 		db.close();
 	}
-	
+
 	public static void listCompleted() {
 		MyDatabase db = new MyDatabase();
 		Connection conn = db.getConnection();
-		
+
 		String sql = "SELECT * FROM " + MyDatabase.tableName + " WHERE is_completed=1;";
 		Statement stmt = null;
 		try {
 			stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(sql);
-			
+
 			int counter = 0;
 
 			while (rs.next()) {
 				counter++;
 				System.out.println(new TodoItem(rs.getInt("id"), rs.getString("category"), rs.getString("title"),
 						rs.getString("memo"), rs.getString("due_date"), rs.getString("current_date"),
-						rs.getInt("is_completed"), PriorityItem.fromNo(rs.getInt("priority")), rs.getString("owner")).toString());
+						rs.getInt("is_completed"), PriorityItem.fromNo(rs.getInt("priority")), rs.getString("owner"))
+								.toString());
 			}
-			
+
 			System.out.println("Completed " + counter + " task(s)");
 
 		} catch (SQLException e) {
@@ -283,7 +290,8 @@ public class TodoList {
 			while (rs.next()) {
 				System.out.println(new TodoItem(rs.getInt("id"), rs.getString("category"), rs.getString("title"),
 						rs.getString("memo"), rs.getString("due_date"), rs.getString("current_date"),
-						rs.getInt("is_completed"), PriorityItem.fromNo(rs.getInt("priority")), rs.getString("owner")).toString());
+						rs.getInt("is_completed"), PriorityItem.fromNo(rs.getInt("priority")), rs.getString("owner"))
+								.toString());
 			}
 
 		} catch (SQLException e) {
@@ -327,7 +335,8 @@ public class TodoList {
 			while (rs.next()) {
 				System.out.println(new TodoItem(rs.getInt("id"), rs.getString("category"), rs.getString("title"),
 						rs.getString("memo"), rs.getString("due_date"), rs.getString("current_date"),
-						rs.getInt("is_completed"), PriorityItem.fromNo(rs.getInt("priority")), rs.getString("owner")).toString());
+						rs.getInt("is_completed"), PriorityItem.fromNo(rs.getInt("priority")), rs.getString("owner"))
+								.toString());
 			}
 
 		} catch (SQLException e) {

@@ -3,6 +3,7 @@ package com.todo;
 
 
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -70,7 +71,12 @@ public class TodoMain {
 				
 			case "comp":
 				try {
-					TodoList.completeItem(Integer.valueOf(input[1]));					
+					List<Integer> numbers = new ArrayList<>();
+					
+					for(String in : input[1].split(","))
+						numbers.add(Integer.valueOf(in));
+						
+					TodoList.completeItems(numbers.toArray(new Integer[0]));					
 				} catch (NumberFormatException nfe) {
 					System.out.println("[ERROR] Not a number");
 				}
