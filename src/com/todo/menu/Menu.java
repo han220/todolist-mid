@@ -25,7 +25,7 @@ public class Menu {
 	}
 
 	public static String[] prompt() {
-		System.out.println("Enter your choice >");
+		System.out.print("Enter your choice > ");
 		Scanner s = new Scanner(System.in);
 		String in = s.nextLine();
 		return in.split(" ");

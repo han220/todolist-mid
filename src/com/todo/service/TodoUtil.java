@@ -22,7 +22,7 @@ public class TodoUtil {
 		String title, desc;
 		Scanner sc = new Scanner(System.in);
 
-		System.out.println("\n" + "========== 생성 \n" + "제목 입력: ");
+		System.out.print("\n" + "========== 생성 \n" + "제목 > ");
 
 		title = sc.next();
 		if (TodoList.isDuplicate(title)) {
@@ -30,21 +30,21 @@ public class TodoUtil {
 			return;
 		}
 
-		System.out.println("카테고리 입력: ");
+		System.out.print("카테고리 > ");
 		String category = sc.next().trim();
 
-		System.out.println("설명 입력: ");
+		System.out.print("설명 > ");
 		sc.nextLine(); // ignores the next line from previous next()
 		desc = sc.nextLine();
 
-		System.out.println("마감일자 입력: ");
+		System.out.print("마감일자 (예: 2021-10-17) > ");
 		String duedate = sc.next().trim();
 
-		System.out.println("우선순위 입력");
 		PriorityItem p = null;
 
 		while (p == null) {
-			System.out.println(PriorityItem.getAllOptions());
+			System.out.print(PriorityItem.getAllOptions());
+			System.out.print("우선순위 > ");
 			p = PriorityItem.fromNo(sc.nextInt());
 		}
 
@@ -56,8 +56,9 @@ public class TodoUtil {
 
 		Scanner sc = new Scanner(System.in);
 
-		System.out.println("\n" + "========== 삭제 \n" + "삭제할 번호 입력: ");
+		System.out.println("\n" + "========== 삭제");
 		System.out.println("========== , 을 활용하여 다중 입력 가능. (ex 2,3,4)");
+		System.out.print("삭제할 번호 입력: ");
 
 		String no = sc.next().trim();
 		for(String n : no.split(","))
@@ -68,32 +69,32 @@ public class TodoUtil {
 
 		Scanner sc = new Scanner(System.in);
 
-		System.out.println("\n" + "========== 수정 \n" + "수정할 항목 번호 입력 \n" + "\n");
+		System.out.print("\n" + "========== 수정 \n" + "수정할 항목 번호 입력: ");
 		String no = sc.next().trim();
 		int no_i = Integer.parseInt(no);
 
-		System.out.println("새로운 제목 입력: ");
+		System.out.print("새로운 제목 > ");
 		String new_title = sc.next().trim();
 		if (TodoList.isDuplicate(new_title)) {
 			System.out.println("[오류:중복] 제목이 중복될 수 없음.");
 			return;
 		}
 
-		System.out.println("카테고리 입력: ");
+		System.out.print("카테고리 > ");
 		String category = sc.next().trim();
 
-		System.out.println("새로운 설명 입력: ");
+		System.out.print("새로운 설명 > ");
 		sc.nextLine(); // ignores the next line from previous next()
 		String new_description = sc.nextLine().trim();
 
-		System.out.println("마감일자 입력: ");
+		System.out.print("마감일자 (예: 2021-10-17) > ");
 		String duedate = sc.next().trim();
 
-		System.out.println("우선순위 입력");
 		PriorityItem p = null;
 
 		while (p == null) {
-			System.out.println(PriorityItem.getAllOptions());
+			System.out.print(PriorityItem.getAllOptions());
+			System.out.print("우선순위 입력 > ");
 			p = PriorityItem.fromNo(sc.nextInt());
 		}
 
