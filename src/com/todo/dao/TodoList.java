@@ -30,12 +30,45 @@ public class TodoList {
 
 		String sql = "insert into " + MyDatabase.tableName
 				+ " (title, memo, category, current_date, due_date, priority, owner, is_completed) values (?, ?, ?, ?, ?, ?, ?, ?);";
+
+		String catsearch_sql = "select * from " + MyDatabase.catName + " where categoryName=?;";
+		String catcreate_sql = "insert into " + MyDatabase.catName + " (categoryName) values (?);";
 		PreparedStatement pstmt = null;
+		ResultSet rs = null;
 		try {
+			// 카테고리 처리. 없으면 만들고, 있으면 id 찾기.
+			// 카테고리가 있는지 확인
+			long catId = -1; // 기본값을 -1 으로 만들고 못찾으면 1추가.
+			pstmt = conn.prepareStatement(catsearch_sql);
+			pstmt.setString(1, t.getCategory());
+			rs = pstmt.executeQuery();
+			if (rs.next())
+				catId = rs.getLong("categoryId");
+			pstmt.close();
+
+			// 없으면 새로 만들기
+			if (catId == -1) {
+				pstmt = conn.prepareStatement(catcreate_sql);
+				pstmt.setString(1, t.getCategory());
+				pstmt.executeUpdate();
+				rs = pstmt.getGeneratedKeys();
+				if (rs.next())
+					catId = rs.getLong(1);
+				pstmt.close();
+			}
+
+			// 다 만들고도 없으면 그냥 리턴
+			if (catId == -1) {
+				System.out.println("[오류] 카테고리가 정의되어있지 않습니다.");
+				db.close();
+				return;
+			}
+
+			// Add TodoItem to DB
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, t.getTitle());
 			pstmt.setString(2, t.getDesc());
-			pstmt.setString(3, t.getCategory());
+			pstmt.setInt(3, (int) catId);
 			pstmt.setString(4, t.getCurrent_date_str());
 			pstmt.setString(5, t.getDueDate());
 			pstmt.setInt(6, (t.getPrioirty() != null ? t.getPrioirty() : PriorityItem.NORMAL).getNo());
@@ -86,7 +119,8 @@ public class TodoList {
 		Connection conn = db.getConnection();
 //		System.out.println("Finding..." + niddle);
 
-		String sql = "SELECT * FROM " + MyDatabase.tableName + " WHERE title LIKE ? OR memo like ? ";
+		String sql = "SELECT * FROM " + MyDatabase.tableName
+				+ " LEFT JOIN category ON list.category = category.categoryId WHERE title LIKE ? OR memo like ? ;";
 		PreparedStatement pstmt = null;
 		try {
 			pstmt = conn.prepareStatement(sql);
@@ -121,18 +155,36 @@ public class TodoList {
 		Connection conn = db.getConnection();
 //		System.out.println("Finding Category..." + niddle);
 
-		String sql = "SELECT * FROM " + MyDatabase.tableName + " WHERE category LIKE ?";
+		String catsearch_sql = "select * from " + MyDatabase.catName + " where categoryName=?;";
+		String sql = "SELECT * FROM " + MyDatabase.tableName
+				+ " LEFT JOIN category ON list.category = category.categoryId WHERE category=?";
 		PreparedStatement pstmt = null;
+		ResultSet rs = null;
 		try {
+			long catId = -1; // 기본값을 -1 으로 만들고 못찾으면 1추가.
+			pstmt = conn.prepareStatement(catsearch_sql);
+			pstmt.setString(1, niddle);
+			rs = pstmt.executeQuery();
+			if (rs.next())
+				catId = rs.getLong("categoryId");
+			pstmt.close();
+
+			// 다 만들고도 없으면 그냥 리턴
+			if (catId == -1) {
+				System.out.println("[오류] 카테고리가 정의되어있지 않습니다.");
+				db.close();
+				return;
+			}
+
 			pstmt = conn.prepareStatement(sql);
-			pstmt.setString(1, "%" + niddle + "%");
-			ResultSet rs = pstmt.executeQuery();
+			pstmt.setInt(1, (int) catId);
+			rs = pstmt.executeQuery();
 
 			// 받은 데이터를 배열에 추가
 			int count = 0;
 			while (rs.next()) {
 				count++;
-				System.out.println(new TodoItem(rs.getInt("id"), rs.getString("category"), rs.getString("title"),
+				System.out.println(new TodoItem(rs.getInt("id"), rs.getString("categoryName"), rs.getString("title"),
 						rs.getString("memo"), rs.getString("due_date"), rs.getString("current_date"),
 						rs.getInt("is_completed"), PriorityItem.fromNo(rs.getInt("priority")), rs.getString("owner"))
 								.toString());
@@ -157,11 +209,42 @@ public class TodoList {
 		String sql = "UPDATE " + MyDatabase.tableName
 				+ " SET title=?, memo=?, category=?, current_date=?, due_date=?, priority=?, owner=? WHERE id=?";
 		PreparedStatement pstmt = null;
+		String catsearch_sql = "select * from " + MyDatabase.catName + " where categoryName=?;";
+		String catcreate_sql = "insert into " + MyDatabase.catName + " (categoryName) values (?);";
+		ResultSet rs = null;
 		try {
+			// 카테고리 처리. 없으면 만들고, 있으면 id 찾기.
+			// 카테고리가 있는지 확인
+			long catId = -1; // 기본값을 -1 으로 만들고 못찾으면 1추가.
+			pstmt = conn.prepareStatement(catsearch_sql);
+			pstmt.setString(1, updated.getCategory());
+			rs = pstmt.executeQuery();
+			if (rs.next())
+				catId = rs.getLong("categoryId");
+			pstmt.close();
+
+			// 없으면 새로 만들기
+			if (catId == -1) {
+				pstmt = conn.prepareStatement(catcreate_sql);
+				pstmt.setString(1, updated.getCategory());
+				pstmt.executeUpdate();
+				rs = pstmt.getGeneratedKeys();
+				if (rs.next())
+					catId = rs.getLong(1);
+				pstmt.close();
+			}
+
+			// 다 만들고도 없으면 그냥 리턴
+			if (catId == -1) {
+				System.out.println("[오류] 카테고리가 정의되어있지 않습니다.");
+				db.close();
+				return;
+			}
+
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, updated.getTitle());
 			pstmt.setString(2, updated.getDesc());
-			pstmt.setString(3, updated.getCategory());
+			pstmt.setInt(3, (int) catId);
 			pstmt.setString(4, updated.getCurrent_date_str());
 			pstmt.setString(5, updated.getDueDate());
 			pstmt.setInt(6, (updated.getPrioirty() != null ? updated.getPrioirty() : PriorityItem.NORMAL).getNo());
@@ -212,7 +295,8 @@ public class TodoList {
 		MyDatabase db = new MyDatabase();
 		Connection conn = db.getConnection();
 
-		String sql = "SELECT * FROM " + MyDatabase.tableName + " WHERE is_completed=1;";
+		String sql = "SELECT * FROM " + MyDatabase.tableName
+				+ " LEFT JOIN category ON list.category = category.categoryId WHERE is_completed=1;";
 		Statement stmt = null;
 		try {
 			stmt = conn.createStatement();
@@ -222,7 +306,7 @@ public class TodoList {
 
 			while (rs.next()) {
 				counter++;
-				System.out.println(new TodoItem(rs.getInt("id"), rs.getString("category"), rs.getString("title"),
+				System.out.println(new TodoItem(rs.getInt("id"), rs.getString("categoryName"), rs.getString("title"),
 						rs.getString("memo"), rs.getString("due_date"), rs.getString("current_date"),
 						rs.getInt("is_completed"), PriorityItem.fromNo(rs.getInt("priority")), rs.getString("owner"))
 								.toString());
@@ -251,7 +335,8 @@ public class TodoList {
 		MyDatabase db = new MyDatabase();
 		Connection conn = db.getConnection();
 
-		String sql = "SELECT * FROM " + MyDatabase.tableName;
+		String sql = "SELECT * FROM " + MyDatabase.tableName
+				+ " LEFT JOIN category ON list.category = category.categoryId;";
 		Statement stmt = null;
 		try {
 			stmt = conn.createStatement();
@@ -259,7 +344,7 @@ public class TodoList {
 
 			// 받은 데이터를 배열에 추가
 			while (rs.next()) {
-				todos.add(new TodoItem(rs.getInt("id"), rs.getString("category"), rs.getString("title"),
+				todos.add(new TodoItem(rs.getInt("id"), rs.getString("categoryName"), rs.getString("title"),
 						rs.getString("memo"), rs.getString("due_date"), rs.getString("current_date"),
 						rs.getInt("is_completed"), PriorityItem.fromNo(rs.getInt("priority")), rs.getString("owner")));
 			}
@@ -281,14 +366,15 @@ public class TodoList {
 		Connection conn = db.getConnection();
 
 		String desc = asc ? "" : "DESC";
-		String sql = "SELECT * FROM " + MyDatabase.tableName + " ORDER BY title " + desc + ";";
+		String sql = "SELECT * FROM " + MyDatabase.tableName
+				+ " LEFT JOIN category ON list.category = category.categoryId ORDER BY title " + desc + ";";
 		Statement stmt = null;
 		try {
 			stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(sql);
 
 			while (rs.next()) {
-				System.out.println(new TodoItem(rs.getInt("id"), rs.getString("category"), rs.getString("title"),
+				System.out.println(new TodoItem(rs.getInt("id"), rs.getString("categoryName"), rs.getString("title"),
 						rs.getString("memo"), rs.getString("due_date"), rs.getString("current_date"),
 						rs.getInt("is_completed"), PriorityItem.fromNo(rs.getInt("priority")), rs.getString("owner"))
 								.toString());
@@ -325,7 +411,8 @@ public class TodoList {
 		Connection conn = db.getConnection();
 
 		String desc = asc ? "" : "DESC";
-		String sql = "SELECT * FROM " + MyDatabase.tableName + " ORDER BY due_date " + desc + ";";
+		String sql = "SELECT * FROM " + MyDatabase.tableName
+				+ " LEFT JOIN category ON list.category = category.categoryId ORDER BY due_date " + desc + ";";
 		Statement stmt = null;
 		try {
 			stmt = conn.createStatement();
@@ -333,7 +420,7 @@ public class TodoList {
 
 			// 받은 데이터를 배열에 추가
 			while (rs.next()) {
-				System.out.println(new TodoItem(rs.getInt("id"), rs.getString("category"), rs.getString("title"),
+				System.out.println(new TodoItem(rs.getInt("id"), rs.getString("categoryName"), rs.getString("title"),
 						rs.getString("memo"), rs.getString("due_date"), rs.getString("current_date"),
 						rs.getInt("is_completed"), PriorityItem.fromNo(rs.getInt("priority")), rs.getString("owner"))
 								.toString());
@@ -386,7 +473,9 @@ public class TodoList {
 		MyDatabase db = new MyDatabase();
 		Connection conn = db.getConnection();
 
-		String sql = "SELECT DISTINCT category FROM " + MyDatabase.tableName;
+		String sql = "select COUNT(*) totalCount, cat.categoryId, cat.categoryName from " + MyDatabase.tableName
+				+ " list inner join " + MyDatabase.catName
+				+ " cat on list.category = cat.categoryId group by cat.categoryId, cat.categoryName;";
 		Statement stmt = null;
 		try {
 			stmt = conn.createStatement();
@@ -394,7 +483,7 @@ public class TodoList {
 
 			// 받은 데이터를 배열에 추가
 			while (rs.next()) {
-				category.add(rs.getString(1));
+				category.add(rs.getString("categoryName") + "(" + rs.getInt("totalCount") + ")");
 			}
 
 		} catch (SQLException e) {

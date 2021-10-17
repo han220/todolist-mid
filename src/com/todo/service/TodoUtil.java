@@ -134,6 +134,7 @@ public class TodoUtil {
 
 		} catch (Exception e) {
 			System.out.println("Error while importing CSV");
+			e.printStackTrace();
 		}
 
 	}

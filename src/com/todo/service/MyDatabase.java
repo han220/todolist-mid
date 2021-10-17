@@ -10,6 +10,7 @@ public class MyDatabase implements Closeable{
 
 	public static final String dbFile = "todolist.db";
 	public static final String tableName = "list";
+	public static final String catName = "category";
 
 	private Connection con = null;
 
@@ -26,8 +27,14 @@ public class MyDatabase implements Closeable{
 			// 만약에 테이블이 없다면 생성
 			Statement stmt = con.createStatement();
 			String sql = "CREATE TABLE IF NOT EXISTS " + tableName
-					+ " (id INTEGER NOT NULL, title TEXT NOT NULL, memo TEXT, category TEXT NOT NULL, current_date TEXT NOT NULL, due_date TEXT, is_completed integer DEFAULT 0, owner VARCHAR(20) NOT NULL, priority integer DEFAULT 2, PRIMARY KEY(id AUTOINCREMENT));";
+					+ " (id INTEGER NOT NULL, title TEXT NOT NULL, memo TEXT, category integer NOT NULL, current_date TEXT NOT NULL, due_date TEXT, is_completed integer DEFAULT 0, owner VARCHAR(20) NOT NULL, priority integer DEFAULT 2, PRIMARY KEY(id AUTOINCREMENT));";
 			stmt.execute(sql);
+			
+			// Create category database
+			sql = "CREATE TABLE IF NOT EXISTS " + catName
+					+ " (categoryId INTEGER NOT NULL, categoryName TEXT NOT NULL, PRIMARY KEY(categoryId AUTOINCREMENT));";
+			stmt.execute(sql);
+			
 			stmt.close();
 
 		} catch (Exception e) {
