@@ -132,7 +132,7 @@ public class TodoList {
 			int count = 0;
 			while (rs.next()) {
 				count++;
-				System.out.println(new TodoItem(rs.getInt("id"), rs.getString("category"), rs.getString("title"),
+				System.out.println(new TodoItem(rs.getInt("id"), rs.getString("categoryName"), rs.getString("title"),
 						rs.getString("memo"), rs.getString("due_date"), rs.getString("current_date"),
 						rs.getInt("is_completed"), PriorityItem.fromNo(rs.getInt("priority")), rs.getString("owner"))
 								.toString());
